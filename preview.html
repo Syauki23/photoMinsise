@@ -243,8 +243,9 @@
       <button class="frame-button" onclick="setFrame('color')">Default</button>
       <button class="frame-button" onclick="setFrame('custom', 'frames/frame1.png')">Frame 1</button>
       <button class="frame-button" onclick="setFrame('custom', 'frames/frame2.png')">Frame 2</button>
-      <button class="frame-button" onclick="setFrame('custom', 'frames/frame3.png')">Frame 3</button>
-      <button class="frame-button" onclick="setFrame('custom', 'frames/yayaya.png')">Frame 4</button>
+      <button class="frame-button" onclick="setFrame('custom', 'frames/frame3.png')">Feast</button>
+      <button class="frame-button" onclick="setFrame('custom', 'frames/yayaya.png')">Hindia</button>
+      <button class="frame-button" onclick="setFrame('custom', 'frames/receipt.png')">Receipt</button>
     </div>
   </div>
 </div>
@@ -273,6 +274,7 @@ function setFrame(f, src = "") {
   else if (src.includes("frame2.png")) color = "#e5e6d9";
   else if (src.includes("frame3.png")) color = "#272323";
   else if (src.includes("yayaya.png")) color = "#363938";
+  else if (src.includes("receipt.png")) color ="#ffffff";
 
   renderCanvas();
 }
