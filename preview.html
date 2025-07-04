@@ -10,7 +10,6 @@
     * {
       font-family: 'Poppins', sans-serif;
     }
-
     html, body {
       margin: 0;
       padding: 0;
@@ -22,7 +21,6 @@
       background-position: center;
       background-attachment: fixed;
     }
-
     .navbar {
       position: sticky;
       top: 0;
@@ -33,7 +31,6 @@
       margin-bottom: 30px;
       padding: 10px;
     }
-
     .nav-container {
       padding: 10px;
       margin: auto;
@@ -41,13 +38,11 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .logo {
       font-size: 22px;
       font-weight: 700;
       color: #4a148c;
     }
-
     .nav-menu {
       list-style: none;
       display: flex;
@@ -55,7 +50,6 @@
       margin: 0;
       padding: 0;
     }
-
     .nav-menu li a {
       text-decoration: none;
       color: #4a148c;
@@ -65,20 +59,17 @@
       border-radius: 8px;
       transition: all 0.3s ease;
     }
-
     .nav-menu li a:hover {
       background-color: #4a148c;
       color: white;
       box-shadow: 0 0 8px rgba(74, 20, 140, 0.3);
     }
-
     .menu-toggle {
       display: none;
       font-size: 26px;
       cursor: pointer;
       color: #4a148c;
     }
-
     .main-container {
       display: flex;
       justify-content: center;
@@ -87,16 +78,13 @@
       gap: 40px;
       padding: 20px;
     }
-
     .canvas-container {
       max-width: 400px;
       text-align: center;
     }
-
     .controls-container {
       max-width: 300px;
     }
-
     canvas {
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
       background-color: white;
@@ -104,9 +92,9 @@
       height: auto;
       border: 1px solid #ccc;
     }
-
     .controls button,
-    .controls input[type="color"] {
+    .controls input[type="color"],
+    .controls select {
       margin: 5px;
       padding: 10px 20px;
       border-radius: 10px;
@@ -116,39 +104,32 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
-
     .color-button {
       background-color: #000000;
       color: #ffffff;
     }
-
     .color-button.putih {
       background-color: #ffffff;
       color: #333;
       border: 1px solid #ccc;
     }
-
     .color-button.pink {
       background-color: #f8bbd0;
       color: #880e4f;
     }
-
     .color-button.abu-abu {
       background-color: #e0e0e0;
       color: #444;
     }
-
     .frame-button {
       background-color: #ec9fdc;
       color: #ffffff;
     }
-
     .frame-button:hover,
     .color-button:hover {
       transform: scale(1.05);
       filter: brightness(1.1);
     }
-
     .tombol a {
       display: inline-block;
       margin-top: 20px;
@@ -159,31 +140,25 @@
       font-weight: 600;
       margin-right: 10px;
     }
-
     a#download {
       background-color: #4db6ac;
       color: white;
     }
-
     a#download:hover {
       background-color: #00897b;
     }
-
     a#reset {
       background-color: #ff8a65;
       color: white;
     }
-
     a#reset:hover {
       background-color: #e64a19;
     }
-
     @media (max-width: 768px) {
       .main-container {
         flex-direction: column;
         align-items: center;
       }
-
       .nav-menu {
         position: absolute;
         top: 70px;
@@ -196,11 +171,9 @@
         gap: 14px;
         display: none;
       }
-
       .nav-menu.show {
         display: flex;
       }
-
       .menu-toggle {
         display: block;
       }
@@ -246,6 +219,16 @@
       <button class="frame-button" onclick="setFrame('custom', 'frames/frame3.png')">Feast</button>
       <button class="frame-button" onclick="setFrame('custom', 'frames/yayaya.png')">Hindia</button>
       <button class="frame-button" onclick="setFrame('custom', 'frames/receipt.png')">Receipt</button>
+      <button class="frame-button" onclick="setFrame('custom', 'frames/spotify.png')">Spotify</button>
+      <br /><br />
+      <strong>Efek Foto</strong><br />
+      <select id="effectSelect" onchange="setEffect(this.value)">
+        <option value="none">Normal</option>
+        <option value="grayscale">Grayscale</option>
+        <option value="sepia">Sepia</option>
+        <option value="invert">Invert</option>
+        <option value="blackwhite">Black & White</option>
+      </select>
     </div>
   </div>
 </div>
@@ -258,6 +241,7 @@ const download = document.getElementById("download");
 let frameChoice = "color";
 let customFrameSrc = "";
 let color = "#ffffff";
+let effectChoice = "none";
 const photos = JSON.parse(localStorage.getItem("photos") || "[]");
 
 function setColor(c, force = false) {
@@ -274,8 +258,14 @@ function setFrame(f, src = "") {
   else if (src.includes("frame2.png")) color = "#e5e6d9";
   else if (src.includes("frame3.png")) color = "#272323";
   else if (src.includes("yayaya.png")) color = "#363938";
-  else if (src.includes("receipt.png")) color ="#ffffff";
+  else if (src.includes("receipt.png")) color = "#ffffff";
+  else if (src.includes("spotify.png")) color = "#000000";
 
+  renderCanvas();
+}
+
+function setEffect(e) {
+  effectChoice = e;
   renderCanvas();
 }
 
@@ -329,11 +319,36 @@ function renderCanvas() {
 
         ctx.drawImage(img, sx, sy, sWidth, sHeight, sideThickness, offsetY + topThickness, photoWidth, photoHeight);
 
+        // Terapkan efek ke area foto
+        if (effectChoice !== "none") {
+          const imageData = ctx.getImageData(sideThickness, offsetY + topThickness, photoWidth, photoHeight);
+          const data = imageData.data;
+          for (let j = 0; j < data.length; j += 4) {
+            const r = data[j], g = data[j + 1], b = data[j + 2];
+            if (effectChoice === "grayscale") {
+              const avg = (r + g + b) / 3;
+              data[j] = data[j + 1] = data[j + 2] = avg;
+            } else if (effectChoice === "sepia") {
+              data[j] = 0.393 * r + 0.769 * g + 0.189 * b;
+              data[j + 1] = 0.349 * r + 0.686 * g + 0.168 * b;
+              data[j + 2] = 0.272 * r + 0.534 * g + 0.131 * b;
+            } else if (effectChoice === "invert") {
+              data[j] = 255 - r;
+              data[j + 1] = 255 - g;
+              data[j + 2] = 255 - b;
+            } else if (effectChoice === "blackwhite") {
+              const avg = (r + g + b) / 3;
+              const bw = avg > 127 ? 255 : 0;
+              data[j] = data[j + 1] = data[j + 2] = bw;
+            }
+          }
+          ctx.putImageData(imageData, sideThickness, offsetY + topThickness);
+        }
+
         loaded++;
         if (loaded === 3) {
           const finalFrameY = offsetY + topThickness + photoHeight + bottomThickness;
           ctx.fillRect(0, finalFrameY, totalWidth, extraBottom);
-
           if (frameChoice === "custom" && customFrameSrc) {
             const frameImg = new Image();
             frameImg.src = customFrameSrc;
@@ -357,7 +372,6 @@ function resetPhoto() {
 }
 
 renderCanvas();
-
 document.getElementById("menuToggle").addEventListener("click", () => {
   document.getElementById("navMenu").classList.toggle("show");
 });
